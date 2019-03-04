@@ -1,23 +1,17 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 
-public class ComponentImage extends JComponent {
-    private final BufferedImage img;
+abstract class MemeComponent extends JComponent {
     private int resizingSpeed = 1;
 
     private int pressedX;
     private int pressedY;
 
-    ComponentImage(BufferedImage img) {
+    MemeComponent() {
         super();
-        setSize(new Dimension(100, 100));
-        setLocation(100, 100);
-        this.img = img;
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -45,7 +39,9 @@ public class ComponentImage extends JComponent {
                         break;
                     }
                     case (KeyEvent.VK_LEFT): {
-                        setSize(getWidth() - resizingSpeed, getHeight());
+                        if (getWidth() - resizingSpeed > 0) {
+                            setSize(getWidth() - resizingSpeed, getHeight());
+                        }
                         break;
                     }
                     case (KeyEvent.VK_RIGHT): {
@@ -53,7 +49,9 @@ public class ComponentImage extends JComponent {
                         break;
                     }
                     case (KeyEvent.VK_UP): {
-                        setSize(getWidth(), getHeight() - resizingSpeed);
+                        if (getHeight() - resizingSpeed > 0) {
+                            setSize(getWidth(), getHeight() - resizingSpeed);
+                        }
                         break;
                     }
                     case (KeyEvent.VK_DOWN): {
@@ -65,16 +63,11 @@ public class ComponentImage extends JComponent {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     resizingSpeed = 1;
                 }
             }
         });
 
-    }
-
-    public void paintComponent(Graphics g) {
-        g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
-        paintBorder(g);
     }
 }
