@@ -16,6 +16,7 @@ class TemplatePanel extends JPanel {
     }
 
     public void paintComponent(Graphics g){
+        System.out.println("Hallo");
         g.drawImage(img, 100, 200, null);
     }
 }

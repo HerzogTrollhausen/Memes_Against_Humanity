@@ -1,12 +1,13 @@
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageComponent extends MemeComponent {
     private final BufferedImage img;
 
-    ImageComponent(BufferedImage img) {
+    ImageComponent(BufferedImage img, JLayeredPane parent) {
+        super(parent);
         this.img = img;
-        setSize(100, 100);
     }
 
     public void paintComponent(Graphics g) {

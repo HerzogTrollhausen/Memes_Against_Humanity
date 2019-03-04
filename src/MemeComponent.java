@@ -1,17 +1,20 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 abstract class MemeComponent extends JComponent {
+    private static final Dimension STARTING_DIMENSION = new Dimension(100, 100);
+
     private int resizingSpeed = 1;
 
     private int pressedX;
     private int pressedY;
 
-    MemeComponent() {
-        super();
+    MemeComponent(JLayeredPane parent) {
+        setSize(STARTING_DIMENSION);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -56,6 +59,16 @@ abstract class MemeComponent extends JComponent {
                     }
                     case (KeyEvent.VK_DOWN): {
                         setSize(getWidth(), getHeight() + resizingSpeed);
+                        break;
+                    }
+                    case (KeyEvent.VK_PAGE_UP): {
+                        parent.setLayer(MemeComponent.this,
+                                JLayeredPane.getLayer(MemeComponent.this) + 1);
+                        break;
+                    }
+                    case (KeyEvent.VK_PAGE_DOWN): {
+                        parent.setLayer(MemeComponent.this,
+                                JLayeredPane.getLayer(MemeComponent.this) - 1);
                         break;
                     }
                 }
