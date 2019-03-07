@@ -1,11 +1,14 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
-public class ImageComponent extends MemeComponent {
-    private final BufferedImage img;
+class TemplateImage extends JComponent {
+    private BufferedImage img;
 
-    ImageComponent(BufferedImage img) {
+    TemplateImage(BufferedImage img) {
         this.img = img;
     }
 

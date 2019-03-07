@@ -13,7 +13,7 @@ abstract class MemeComponent extends JComponent {
     private int pressedX;
     private int pressedY;
 
-    MemeComponent(JLayeredPane parent) {
+    MemeComponent() {
         setSize(STARTING_DIMENSION);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -62,13 +62,11 @@ abstract class MemeComponent extends JComponent {
                         break;
                     }
                     case (KeyEvent.VK_PAGE_UP): {
-                        parent.setLayer(MemeComponent.this,
-                                JLayeredPane.getLayer(MemeComponent.this) + 1);
+                        MainFrame.increaseDepth(MemeComponent.this, 1);
                         break;
                     }
                     case (KeyEvent.VK_PAGE_DOWN): {
-                        parent.setLayer(MemeComponent.this,
-                                JLayeredPane.getLayer(MemeComponent.this) - 1);
+                        MainFrame.increaseDepth(MemeComponent.this, -1);
                         break;
                     }
                 }

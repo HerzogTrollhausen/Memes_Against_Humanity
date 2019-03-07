@@ -3,8 +3,7 @@ import java.awt.*;
 
 public class TextComponent extends MemeComponent {
     private String text;
-    TextComponent(String text, JLayeredPane parent) {
-        super(parent);
+    TextComponent(String text) {
         this.text = text;
     }
 
