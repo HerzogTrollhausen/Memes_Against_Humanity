@@ -13,6 +13,9 @@ abstract class MemeComponent extends JComponent {
     private int pressedX;
     private int pressedY;
 
+    static int minWidth = 0;
+    private static int minHeight = 0;
+
     MemeComponent() {
         setSize(STARTING_DIMENSION);
         addMouseListener(new MouseAdapter() {
@@ -42,7 +45,7 @@ abstract class MemeComponent extends JComponent {
                         break;
                     }
                     case (KeyEvent.VK_LEFT): {
-                        if (getWidth() - resizingSpeed > 0) {
+                        if (getWidth() - resizingSpeed > minWidth) {
                             setSize(getWidth() - resizingSpeed, getHeight());
                         }
                         break;
@@ -52,7 +55,7 @@ abstract class MemeComponent extends JComponent {
                         break;
                     }
                     case (KeyEvent.VK_UP): {
-                        if (getHeight() - resizingSpeed > 0) {
+                        if (getHeight() - resizingSpeed > minHeight) {
                             setSize(getWidth(), getHeight() - resizingSpeed);
                         }
                         break;

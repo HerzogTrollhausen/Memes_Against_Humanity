@@ -19,8 +19,8 @@ class ComponentButton extends JToggleButton {
         });
     }
 
-    boolean isImage(BufferedImage img) {
-        return img.equals(this.img);
+    boolean isImage(Object content) {
+        return content.equals(img) || content.equals(getText());
     }
 
     boolean isActive() {

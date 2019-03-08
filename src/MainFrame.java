@@ -15,6 +15,8 @@ public class MainFrame extends JFrame {
         setSize(1000, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
+        //getContentPane().setLayout(new GridBagLayout());
+        //GridBagConstraints c = new GridBagConstraints();
 
         components = imagesInFolder(componentFolder);
 
@@ -29,14 +31,20 @@ public class MainFrame extends JFrame {
         template.setSize(interactiveLayeredPane.getPreferredSize());
         interactiveLayeredPane.setLayer(template, Integer.MIN_VALUE);
         oben.add(interactiveLayeredPane);
-        add(oben);
+        getContentPane().add(oben);
 
         JPanel unten = new JPanel();
         unten.setBackground(Color.GREEN);
-        ButtonRow topRow = new ButtonRow();
+
+        ButtonRow topRow = new ButtonRow(true);
         topRow.fillUpRow();
         unten.add(topRow);
-        add(unten);
+
+        ButtonRow bottomRow = new ButtonRow(false);
+        bottomRow.fillUpRow();
+        unten.add(bottomRow);
+
+        getContentPane().add(unten);
         setVisible(true);
 
     }
@@ -63,6 +71,11 @@ public class MainFrame extends JFrame {
             return a[((int) (Math.random() * a.length))];
         }
         return null;
+    }
+
+    static String randomString() {
+        return (String)randomArrayElement(new String[]{"Hallo", "Tschüss", "i",
+                "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"});
     }
 
     private BufferedImage loadImage(String path) {
@@ -96,6 +109,16 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ignored) {
+
+        }
         new MainFrame();
     }
 }
