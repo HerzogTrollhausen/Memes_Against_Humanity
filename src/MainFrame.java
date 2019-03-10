@@ -2,51 +2,82 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class MainFrame extends JFrame {
     private static JLayeredPane interactiveLayeredPane;
-    private static BufferedImage[] components;
-    private static File componentFolder = new File("./Bilder/Components");
-    private MainFrame() {
+    private static final String IMAGE_COMPONENT_FOLDER = "Components";
+    private static final String TEMPLATE_FOLDER = "Templates";
+    private static final String STRING_COMPONENTS_FILE = "Texte.txt";
+    private static String[] componentStrings;
+    private static BufferedImage[] componentImages;
+    private static BufferedImage[] templateImages;
+    private ButtonRow topRow;
+    private ButtonRow bottomRow;
+
+    private MainFrame(String contentFolder) {
         super("Maimais gegen die Menschlichkeit");
-        setSize(1000, 800);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        System.out.println(contentFolder);
+        componentStrings = contentOfFile(new File(contentFolder + STRING_COMPONENTS_FILE));
+        componentImages = imagesInFolder(new File(contentFolder + IMAGE_COMPONENT_FOLDER));
+        templateImages = imagesInFolder(new File(contentFolder + TEMPLATE_FOLDER));
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
         //getContentPane().setLayout(new GridBagLayout());
         //GridBagConstraints c = new GridBagConstraints();
 
-        components = imagesInFolder(componentFolder);
-
         JPanel oben = new JPanel();
 
         interactiveLayeredPane = new JLayeredPane();
-        interactiveLayeredPane.setBackground(Color.RED);
         interactiveLayeredPane.setPreferredSize(new Dimension(400, 400));
         interactiveLayeredPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        JComponent template = new TemplateImage(loadImage("./Bilder/Templates/Unbenannt.PNG"));
-        interactiveLayeredPane.add(template);
-        template.setSize(interactiveLayeredPane.getPreferredSize());
-        interactiveLayeredPane.setLayer(template, Integer.MIN_VALUE);
+        newTemplate();
         oben.add(interactiveLayeredPane);
+
+        JButton next = new JButton("Weiter");
+        next.addActionListener(e -> newTemplate());
+        oben.add(next);
+
         getContentPane().add(oben);
 
         JPanel unten = new JPanel();
-        unten.setBackground(Color.GREEN);
+        unten.setLayout(new BoxLayout(unten, BoxLayout.PAGE_AXIS));
 
-        ButtonRow topRow = new ButtonRow(true);
+        topRow = new ButtonRow(true);
         topRow.fillUpRow();
         unten.add(topRow);
 
-        ButtonRow bottomRow = new ButtonRow(false);
+        bottomRow = new ButtonRow(false);
         bottomRow.fillUpRow();
         unten.add(bottomRow);
 
+        unten.add(new ComponentButton());
+
         getContentPane().add(unten);
+        setExtendedState(MAXIMIZED_BOTH);
         setVisible(true);
 
+    }
+
+    private void newTemplate() {
+        interactiveLayeredPane.removeAll();
+        if (topRow != null && bottomRow != null) {
+            topRow.cleanUpUsedButtons();
+            bottomRow.cleanUpUsedButtons();
+            topRow.fillUpRow();
+            bottomRow.fillUpRow();
+        }
+        setTemplate(new TemplateImage((BufferedImage) randomArrayElement(templateImages)));
+        repaint();
+        revalidate();
+    }
+
+    private void setTemplate(TemplateImage template) {
+        interactiveLayeredPane.add(template);
+        template.setSize(interactiveLayeredPane.getPreferredSize());
+        interactiveLayeredPane.setLayer(template, Integer.MIN_VALUE);
     }
 
     static void removeComponent(JComponent component) {
@@ -63,7 +94,7 @@ public class MainFrame extends JFrame {
     }
 
     static BufferedImage randomComponent() {
-        return (BufferedImage)randomArrayElement(components);
+        return (BufferedImage) randomArrayElement(componentImages);
     }
 
     private static Object randomArrayElement(Object[] a) {
@@ -74,17 +105,38 @@ public class MainFrame extends JFrame {
     }
 
     static String randomString() {
-        return (String)randomArrayElement(new String[]{"Hallo", "Tschüss", "i",
-                "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"});
+        return (String) randomArrayElement(componentStrings);
     }
 
     private BufferedImage loadImage(String path) {
         try {
+            System.out.println(path);
             return ImageIO.read(new File(path));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException();
         }
+    }
+
+    private static String[] contentOfFile(File f) {
+        try {
+            FileReader fileReader = new FileReader(f);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            Stream<String> result = bufferedReader.lines();
+            if (result != null) {
+                Object[] obs = result.toArray();
+                bufferedReader.close();
+                fileReader.close();
+                String[] strings = new String[obs.length];
+                for (int i = 0; i < obs.length; i++) {
+                    strings[i] = (String) obs[i];
+                }
+                return strings;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new String[0];
     }
 
     private static BufferedImage[] imagesInFolder(File folder) {
@@ -102,7 +154,7 @@ public class MainFrame extends JFrame {
             }
         }
         BufferedImage[] tmp = new BufferedImage[images.size()];
-        for(int i = 0; i < tmp.length; i++) {
+        for (int i = 0; i < tmp.length; i++) {
             tmp[i] = images.get(i);
         }
         return tmp;
@@ -119,6 +171,11 @@ public class MainFrame extends JFrame {
         } catch (Exception ignored) {
 
         }
-        new MainFrame();
+        JFileChooser chooser = new JFileChooser("C:\\Users\\User\\IdeaProjects\\Meme");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnValue = chooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            new MainFrame(chooser.getSelectedFile().getPath() + "/");
+        }
     }
 }

@@ -1,12 +1,12 @@
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 class ButtonRow extends JPanel {
-    final static private int NUMBER_OF_BUTTONS = 4;
+    final static private int NUMBER_OF_BUTTONS = 10;
 
-    private List<ComponentButton> buttons = new LinkedList<>();
+    private List<ComponentButton> buttons = new ArrayList<>();
     private boolean imageType;
 
     /**
@@ -35,6 +35,19 @@ class ButtonRow extends JPanel {
                 }
                 buttons.add(b);
                 add(b);
+            }
+        }
+    }
+
+    void cleanUpUsedButtons() {
+        int i = 0;
+        while(i < buttons.size()) {
+            ComponentButton b = buttons.get(i);
+            if(b.isActive()) {
+                remove(b);
+                buttons.remove(b);
+            } else {
+                i++;
             }
         }
     }

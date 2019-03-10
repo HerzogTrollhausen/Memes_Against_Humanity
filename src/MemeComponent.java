@@ -13,7 +13,7 @@ abstract class MemeComponent extends JComponent {
     private int pressedX;
     private int pressedY;
 
-    static int minWidth = 0;
+    private static int minWidth = 0;
     private static int minHeight = 0;
 
     MemeComponent() {
@@ -82,6 +82,9 @@ abstract class MemeComponent extends JComponent {
                 }
             }
         });
+    }
+
+    void setColor(Color c) {
 
     }
 }

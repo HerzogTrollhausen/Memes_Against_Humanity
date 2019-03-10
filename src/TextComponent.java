@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class TextComponent extends MemeComponent {
     private String text;
     private static Font font = new Font("Impact", Font.BOLD, 20);
+    private Color textColor;
 
     TextComponent(String text) {
         this.text = text;
@@ -13,6 +14,7 @@ public class TextComponent extends MemeComponent {
     @Override
     protected void paintComponent(Graphics g) {
         g.setFont(font);
+        g.setColor(textColor);
         FontMetrics m = g.getFontMetrics();
         ArrayList<String> lines = new ArrayList<>();
         char[] ca = text.toCharArray();
@@ -37,5 +39,10 @@ public class TextComponent extends MemeComponent {
         for (int j = 0; j < lines.size(); j++) {
             g.drawString(lines.get(j), 0, (j + 1) * m.getHeight());
         }
+    }
+
+    @Override
+    void setColor(Color c) {
+        textColor = c;
     }
 }
