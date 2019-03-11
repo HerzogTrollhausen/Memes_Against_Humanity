@@ -22,7 +22,7 @@ class ComponentButton extends JToggleButton {
         });
     }
 
-    boolean isImage(Object content) {
+    boolean hasContent(Object content) {
         return content.equals(img) || content.equals(getText());
     }
 

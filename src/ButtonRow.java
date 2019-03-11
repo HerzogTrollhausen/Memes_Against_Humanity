@@ -17,16 +17,14 @@ class ButtonRow extends JPanel {
         this.imageType = imageType;
     }
 
-    @SuppressWarnings("ConstantConditions")
     void fillUpRow() {
-        while (buttons.size() < NUMBER_OF_BUTTONS) {
+        ArrayList availableContent = imageType
+                ? MainFrame.getComponentImages()
+                : MainFrame.getComponentStrings();
+        while (buttons.size() < NUMBER_OF_BUTTONS && !availableContent.isEmpty()) {
             Object content;
             ComponentButton b;
-            if (imageType) {
-                content = MainFrame.randomComponent();
-            } else {
-                content = MainFrame.randomString();
-            }
+            content = availableContent.remove((int) (Math.random() * availableContent.size()));
             if (!contains(content)) {
                 if (imageType) {
                     b = new ComponentButton((BufferedImage) content);
@@ -41,9 +39,9 @@ class ButtonRow extends JPanel {
 
     void cleanUpUsedButtons() {
         int i = 0;
-        while(i < buttons.size()) {
+        while (i < buttons.size()) {
             ComponentButton b = buttons.get(i);
-            if(b.isActive()) {
+            if (b.isActive()) {
                 remove(b);
                 buttons.remove(b);
             } else {
@@ -54,7 +52,7 @@ class ButtonRow extends JPanel {
 
     private boolean contains(Object content) {
         for (ComponentButton b : buttons) {
-            if (b.isImage(content)) {
+            if (b.hasContent(content)) {
                 return true;
             }
         }

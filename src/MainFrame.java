@@ -1,3 +1,5 @@
+import jdk.nashorn.internal.scripts.JO;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -11,15 +13,14 @@ public class MainFrame extends JFrame {
     private static final String IMAGE_COMPONENT_FOLDER = "Components";
     private static final String TEMPLATE_FOLDER = "Templates";
     private static final String STRING_COMPONENTS_FILE = "Texte.txt";
-    private static String[] componentStrings;
-    private static BufferedImage[] componentImages;
-    private static BufferedImage[] templateImages;
+    private static ArrayList<String> componentStrings;
+    private static ArrayList<BufferedImage> componentImages;
+    private static ArrayList<BufferedImage> templateImages;
     private ButtonRow topRow;
     private ButtonRow bottomRow;
 
-    private MainFrame(String contentFolder) {
+    private MainFrame(String contentFolder) throws IOException, InsufficientFilesException {
         super("Maimais gegen die Menschlichkeit");
-        System.out.println(contentFolder);
         componentStrings = contentOfFile(new File(contentFolder + STRING_COMPONENTS_FILE));
         componentImages = imagesInFolder(new File(contentFolder + IMAGE_COMPONENT_FOLDER));
         templateImages = imagesInFolder(new File(contentFolder + TEMPLATE_FOLDER));
@@ -69,7 +70,7 @@ public class MainFrame extends JFrame {
             topRow.fillUpRow();
             bottomRow.fillUpRow();
         }
-        setTemplate(new TemplateImage((BufferedImage) randomArrayElement(templateImages)));
+        setTemplate(new TemplateImage((BufferedImage) randomArrayListElement(templateImages)));
         repaint();
         revalidate();
     }
@@ -93,71 +94,65 @@ public class MainFrame extends JFrame {
         interactiveLayeredPane.add(component);
     }
 
-    static BufferedImage randomComponent() {
-        return (BufferedImage) randomArrayElement(componentImages);
-    }
-
-    private static Object randomArrayElement(Object[] a) {
-        if (a != null && a.length > 0) {
-            return a[((int) (Math.random() * a.length))];
+    private static Object randomArrayListElement(ArrayList a) {
+        if (a != null && a.size() > 0) {
+            return a.get(((int) (Math.random() * a.size())));
         }
         return null;
     }
 
-    static String randomString() {
-        return (String) randomArrayElement(componentStrings);
-    }
+    private static ArrayList<String> contentOfFile(File f) throws IOException,
+            InsufficientFilesException.EmptyTextFileException {
 
-    private BufferedImage loadImage(String path) {
-        try {
-            System.out.println(path);
-            return ImageIO.read(new File(path));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private static String[] contentOfFile(File f) {
-        try {
-            FileReader fileReader = new FileReader(f);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            Stream<String> result = bufferedReader.lines();
-            if (result != null) {
-                Object[] obs = result.toArray();
-                bufferedReader.close();
-                fileReader.close();
-                String[] strings = new String[obs.length];
-                for (int i = 0; i < obs.length; i++) {
-                    strings[i] = (String) obs[i];
+        FileReader fileReader = new FileReader(f);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        Stream<String> result = bufferedReader.lines();
+        if (result != null) {
+            Object[] obs = result.toArray();
+            bufferedReader.close();
+            fileReader.close();
+            if (obs.length > 0) {
+                ArrayList<String> strings = new ArrayList<>(obs.length);
+                for (Object ob : obs) {
+                    strings.add((String) ob);
                 }
                 return strings;
+            } else {
+                throw new InsufficientFilesException.EmptyTextFileException();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            throw new IllegalStateException("result is null");
         }
-        return new String[0];
     }
 
-    private static BufferedImage[] imagesInFolder(File folder) {
+    @SuppressWarnings("unchecked")
+    static ArrayList<String> getComponentStrings() {
+        return (ArrayList<String>) componentStrings.clone();
+    }
+
+    @SuppressWarnings("unchecked")
+    static ArrayList<BufferedImage> getComponentImages() {
+        return (ArrayList<BufferedImage>) componentImages.clone();
+    }
+
+
+    private static ArrayList<BufferedImage> imagesInFolder(File folder) throws IOException,
+            InsufficientFilesException.MissingImagesException {
         ArrayList<BufferedImage> images = new ArrayList<>();
         if (folder.isDirectory()) {
             File[] files = folder.listFiles();
-            if (files != null) {
+            if (files == null) {
+                throw new IllegalArgumentException("folder.listFiles returns null");
+            }
+            if (files.length > 0) {
                 for (File f : files) {
-                    try {
-                        images.add(ImageIO.read(f));
-                    } catch (IOException ignored) {
-
-                    }
+                    images.add(ImageIO.read(f));
                 }
+            } else {
+                throw new InsufficientFilesException.MissingImagesException();
             }
         }
-        BufferedImage[] tmp = new BufferedImage[images.size()];
-        for (int i = 0; i < tmp.length; i++) {
-            tmp[i] = images.get(i);
-        }
-        return tmp;
+        return images;
     }
 
     public static void main(String[] args) {
@@ -175,7 +170,21 @@ public class MainFrame extends JFrame {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnValue = chooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            new MainFrame(chooser.getSelectedFile().getPath() + "/");
+            try {
+                new MainFrame(chooser.getSelectedFile().getPath() + "/");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Der Ordner hat nicht die korrekte Struktur! "
+                                + "Im Ordner müssen sich "
+                                + System.lineSeparator()
+                                + "- ein Ordner namens 'Templates', "
+                                + System.lineSeparator()
+                                + "- ein Ordner namens 'Components' und "
+                                + System.lineSeparator()
+                                + "- eine Datei namens 'Texte.txt' befinden.");
+            } catch (InsufficientFilesException e) {
+                JOptionPane.showMessageDialog(null, e.getMessage());
+            }
         }
     }
 }
