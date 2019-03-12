@@ -1,9 +1,6 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 class TemplateImage extends JComponent {
     private BufferedImage img;
@@ -14,5 +11,13 @@ class TemplateImage extends JComponent {
 
     public void paintComponent(Graphics g) {
         g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+    }
+
+    double getImageWidth() {
+        return img.getWidth();
+    }
+
+    double getImageHeight() {
+        return img.getHeight();
     }
 }

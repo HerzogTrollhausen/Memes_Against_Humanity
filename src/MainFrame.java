@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
         JPanel oben = new JPanel();
 
         interactiveLayeredPane = new JLayeredPane();
-        interactiveLayeredPane.setPreferredSize(new Dimension(400, 400));
+        interactiveLayeredPane.setPreferredSize(new Dimension(600, 600));
         interactiveLayeredPane.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         newTemplate();
         oben.add(interactiveLayeredPane);
@@ -77,7 +77,18 @@ public class MainFrame extends JFrame {
 
     private void setTemplate(TemplateImage template) {
         interactiveLayeredPane.add(template);
-        template.setSize(interactiveLayeredPane.getPreferredSize());
+
+        double desiredRelation = template.getImageHeight() / template.getImageWidth();
+        Dimension preferredSize = interactiveLayeredPane.getPreferredSize();
+        if (template.getImageHeight() > template.getImageWidth()) {
+            template.setSize((int) (preferredSize.getHeight() / desiredRelation),
+                    (int) preferredSize.getHeight());
+        } else {
+            template.setSize((int) preferredSize.getWidth(),
+                    (int) (preferredSize.getWidth() * desiredRelation));
+        }
+
+        //template.setSize(interactiveLayeredPane.getPreferredSize());
         interactiveLayeredPane.setLayer(template, Integer.MIN_VALUE);
     }
 
