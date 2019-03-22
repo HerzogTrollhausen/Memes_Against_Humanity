@@ -62,11 +62,11 @@ class ComponentButton extends JToggleButton {
         });
     }
 
-    ComponentButton() {
-        setBackground(Color.BLACK);
+    ComponentButton(Color c) {
+        setBackground(c);
         setPreferredSize(new Dimension(100, 50));
         addActionListener(e -> {
-            component = new BlankComponent();
+            component = new BlankComponent(c);
             MainFrame.addComponent(component);
             setSelected(false);
         });

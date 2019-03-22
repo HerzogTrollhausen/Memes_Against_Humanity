@@ -11,6 +11,7 @@ class TemplateImage extends JComponent {
 
     public void paintComponent(Graphics g) {
         g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
+        //g.drawImage(img, 0, 0, 400, 400, null);
     }
 
     double getImageWidth() {

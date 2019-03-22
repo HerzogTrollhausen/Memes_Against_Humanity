@@ -3,5 +3,5 @@ cd src
 javac -d ..\meinOutput MainFrame.java
 cd ..\meinOutput
 jar cfm ..\MemesAgainstHumanity.jar ..\src\Manifest *.class
-cd ..
+REM cd ..
 REM jar cfM MemesAgainstHumanity.zip MemesAgainstHumanity.jar
